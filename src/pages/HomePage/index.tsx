@@ -9,7 +9,7 @@ import {
   Box,
   Button,
 } from "@mui/material";
-import { MenuCard } from "../../components/MenuCard.tsx";
+import { MenuCard } from "../../components/InventoryCard.tsx";
 import SideMenu from "../../components/SideMenu.tsx";
 
 export const HomePage: React.FC = () => {
@@ -19,9 +19,13 @@ export const HomePage: React.FC = () => {
   const handleUpdate = (id: number, newStock: number) => {
     setInventoryList((prevList) =>
       prevList.map((item) =>
-        item.id === id ? { ...item, stock: newStock } : item,
+        item.id === id ? { ...item, count: newStock } : item,
       ),
     );
+  };
+
+  const handleDelete = (id: number) => {
+    setInventoryList((prevList) => prevList.filter((item) => item.id !== id));
   };
 
   const filteredStock =
@@ -75,6 +79,7 @@ export const HomePage: React.FC = () => {
                   <MenuCard
                     item={item}
                     onSaveStock={(newVal) => handleUpdate(item.id, newVal)}
+                    onDelete={() => handleDelete(item.id)}
                   />
                 </Grid>
               ))}

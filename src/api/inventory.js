@@ -5,10 +5,14 @@ export const inventory = {
     const response = await apiClient.get("/inventory");
     return response.data;
   },
-  updateStock: async () => {
-    const response = await apiClient.patch("/inventory/${id}/", {
-      stock: newStock,
+  updateItem: async (id, newStock) => {
+    const response = await apiClient.patch(`/inventory/${id}/`, {
+      count: newStock,
     });
+    return response.data;
+  },
+  deleteItem: async (id) => {
+    const response = await apiClient.delete(`/inventory/${id}/`);
     return response.data;
   },
 };

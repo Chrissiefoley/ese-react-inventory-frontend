@@ -2,7 +2,9 @@ export interface MenuItem {
   id: number;
   name: string;
   category: string;
-  stock: number;
+  description: string;
+  count: number;
+  price: string;
   image: string;
 }
 
@@ -12,28 +14,36 @@ export const menuData: MenuItem[] = [
     id: 1,
     name: "Coca Cola",
     category: "Soft drinks",
-    stock: 45,
+    description: "",
+    count: 45,
+    price: "£3.50",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 2,
     name: "Still Water",
     category: "Soft drinks",
-    stock: 100,
+    description: "",
+    count: 100,
+    price: "£3.00",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 3,
     name: "Gin & Tonic",
     category: "Alcoholic drinks",
-    stock: 20,
+    description: "",
+    count: 20,
+    price: "£9.50",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 4,
     name: "Heineken",
     category: "Alcoholic drinks",
-    stock: 35,
+    description: "",
+    count: 35,
+    price: "£7.50",
     image: "https://via.placeholder.com/150",
   },
 
@@ -42,21 +52,27 @@ export const menuData: MenuItem[] = [
     id: 5,
     name: "Ham & Cheese",
     category: "Sandwiches",
-    stock: 12,
+    description: "",
+    count: 12,
+    price: "£6.50",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 6,
     name: "Chicken Caesar",
     category: "Wraps",
-    stock: 15,
+    description: "",
+    count: 15,
+    price: "£7.50",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 7,
     name: "Tuna Melt",
     category: "Toasties",
-    stock: 8,
+    description: "",
+    count: 8,
+    price: "£6.50",
     image: "https://via.placeholder.com/150",
   },
 
@@ -65,21 +81,27 @@ export const menuData: MenuItem[] = [
     id: 8,
     name: "Chocolate Muffin",
     category: "Sweet Treats",
-    stock: 25,
+    description: "",
+    count: 25,
+    price: "£2.50",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 9,
     name: "Sea Salt Crisps",
     category: "Crisps and crackers",
-    stock: 50,
+    description: "",
+    count: 50,
+    price: "£2.50",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 10,
     name: "Junior Pilot Box",
     category: "Kids snack boxes",
-    stock: 10,
+    description: "",
+    count: 10,
+    price: "£5.50",
     image: "https://via.placeholder.com/150",
   },
 
@@ -88,14 +110,18 @@ export const menuData: MenuItem[] = [
     id: 11,
     name: "Chanel No. 5",
     category: "Perfume",
-    stock: 5,
+    description: "",
+    count: 5,
+    price: "£65.00",
     image: "https://via.placeholder.com/150",
   },
   {
     id: 12,
     name: "Mac Lipstick",
     category: "Makeup",
-    stock: 14,
+    description: "",
+    count: 14,
+    price: "£9.50",
     image: "https://via.placeholder.com/150",
   },
 ];
