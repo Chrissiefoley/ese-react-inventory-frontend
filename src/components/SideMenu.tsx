@@ -1,7 +1,6 @@
 import React from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { Sidebar, Menu, MenuItem, Submenu, Logo } from "react-mui-sidebar";
-import { Box, Container } from "@mui/material";
+import { Sidebar, Menu, MenuItem } from "react-mui-sidebar";
+import { Box } from "@mui/material";
 
 interface SideMenuProps {
   onSelect: (category: string) => void;

@@ -1,13 +1,4 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Box,
-  Alert,
-  Button,
-  Typography,
-  TextField,
-  Link,
-} from "@mui/material";
+import { Container, Box, Button, Typography, Link } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export const LogoutPage = () => {

@@ -15,7 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { inventory } from "../api/inventory";
 
-interface MenuItemProps {
+export interface MenuItemProps {
   item: {
     id: number;
     name: string;
@@ -23,10 +23,10 @@ interface MenuItemProps {
     category: string;
     count: number;
     price: string;
-    image: string;
+    image?: string;
   };
-  onSaveStock: (newStock: number) => void;
-  onDelete: (id: number) => void;
+  onSaveStock: (newVal: number) => void;
+  onDelete: () => void;
 }
 
 export const MenuCard: React.FC<MenuItemProps> = ({

@@ -1,42 +1,12 @@
 import React from "react";
-import { menuData } from "../../content/content.ts";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import {
-  AppBar,
-  Toolbar,
-  Grid,
-  Container,
-  Typography,
-  Box,
-  Button,
-  IconButton,
-} from "@mui/material";
-import { MenuCard } from "../../components/InventoryCard.tsx";
+import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
 import SideMenu from "../../components/SideMenu.tsx";
 import { useNavigate } from "react-router-dom";
 import { InventoryPage } from "../InventoryDashboard/InventoryPage.tsx";
 
 export const HomePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = React.useState("All");
-  const [inventoryList, setInventoryList] = React.useState(menuData);
   const navigate = useNavigate();
-
-  const handleUpdate = (id: number, newStock: number) => {
-    setInventoryList((prevList) =>
-      prevList.map((item) =>
-        item.id === id ? { ...item, count: newStock } : item,
-      ),
-    );
-  };
-
-  const handleDelete = (id: number) => {
-    setInventoryList((prevList) => prevList.filter((item) => item.id !== id));
-  };
-
-  const filteredStock =
-    selectedCategory === "All"
-      ? menuData
-      : menuData.filter((item) => item.category == selectedCategory);
 
   return (
     <>

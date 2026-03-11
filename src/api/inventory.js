@@ -2,17 +2,15 @@ import { apiClient } from "./client";
 
 export const inventory = {
   getItems: async () => {
-    const response = await apiClient.get("/inventory");
+    const response = await apiClient.get("/items/");
     return response.data;
   },
-  updateItem: async (id, newStock) => {
-    const response = await apiClient.patch(`/inventory/${id}/`, {
-      count: newStock,
-    });
+  updateItem: async (id, updates) => {
+    const response = await apiClient.patch(`/items/${id}/`, updates);
     return response.data;
   },
   deleteItem: async (id) => {
-    const response = await apiClient.delete(`/inventory/${id}/`);
+    const response = await apiClient.delete(`/items/${id}/`);
     return response.data;
   },
 };

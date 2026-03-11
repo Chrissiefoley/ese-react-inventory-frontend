@@ -1,41 +1,64 @@
-import React from "react";
-import { menuData } from "../../content/content.ts";
+import React, { useEffect, useState } from "react";
 import AddBoxIcon from "@mui/icons-material/AddBox";
-import {
-  AppBar,
-  Toolbar,
-  Grid,
-  Container,
-  Typography,
-  Box,
-  Button,
-  IconButton,
-} from "@mui/material";
+import { Grid, Container, Typography, IconButton } from "@mui/material";
 import { MenuCard } from "../../components/InventoryCard.tsx";
-import SideMenu from "../../components/SideMenu.tsx";
 import { useNavigate } from "react-router-dom";
+import { inventory } from "../../api/inventory.js";
+
+interface InventoryItem {
+  id: number;
+  name: string;
+  description: string;
+  category: string;
+  count: number;
+  price: string;
+  image?: string;
+}
 
 export const InventoryPage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = React.useState("All");
-  const [inventoryList, setInventoryList] = React.useState(menuData);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [inventoryList, setInventoryList] = useState<InventoryItem[]>([]);
   const navigate = useNavigate();
 
-  const handleUpdate = (id: number, newStock: number) => {
-    setInventoryList((prevList) =>
-      prevList.map((item) =>
-        item.id === id ? { ...item, count: newStock } : item,
-      ),
-    );
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const data = await inventory.getItems();
+        console.log("SUCCESS: Data in React state:", data);
+        setInventoryList(data);
+      } catch (error) {
+        console.error("Error fetching inventory:", error);
+      }
+    };
+    fetchInventory();
+  }, []);
+
+  const handleUpdate = async (id: number, newStock: number) => {
+    try {
+      await inventory.updateItem(id, { count: newStock });
+      setInventoryList((prevList) =>
+        prevList.map((item) =>
+          item.id === id ? { ...item, count: newStock } : item,
+        ),
+      );
+    } catch (error) {
+      console.error("Error updating inventory:", error);
+    }
   };
 
-  const handleDelete = (id: number) => {
-    setInventoryList((prevList) => prevList.filter((item) => item.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await inventory.deleteItem(id);
+      setInventoryList((prevList) => prevList.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting inventory:", error);
+    }
   };
 
   const filteredStock =
     selectedCategory === "All"
-      ? menuData
-      : menuData.filter((item) => item.category == selectedCategory);
+      ? inventoryList
+      : inventoryList.filter((item) => item.category === selectedCategory);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -44,12 +67,12 @@ export const InventoryPage: React.FC = () => {
           Inventory Dashboard
         </Typography>
         <IconButton>
-          <AddBoxIcon />
+          <AddBoxIcon onClick={() => navigate("/add-product")} />
           <Typography>Add new item</Typography>
         </IconButton>
       </Grid>
       <Grid container spacing={3}>
-        {filteredStock.map((item) => (
+        {inventoryList.map((item) => (
           <Grid size={12} key={item.id}>
             <MenuCard
               item={item}
