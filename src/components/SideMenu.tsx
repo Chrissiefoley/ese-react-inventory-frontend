@@ -144,6 +144,9 @@ const SideMenu: React.FC<SideMenuProps> = ({ onSelect }) => {
         <MenuItem link="/logout">
           <Box>Log out</Box>{" "}
         </MenuItem>
+        <MenuItem link="/profile">
+          <Box>My Details</Box>{" "}
+        </MenuItem>
       </Menu>
     </Sidebar>
   );
