@@ -1,17 +1,16 @@
-import axios from "axios";
+import { apiClient } from "./client";
 
-export const register = async () => {
-  const response = await apiClient.post("/register");
-  return response.data; 
+export const register = async (userData) => {
+  const response = await apiClient.post("/register", userData);
+  return response.data;
 };
 
-export const login = async () => {
-  const response = await apiClient.post("/token");
-  return response.data; 
+export const login = async (credentials) => {
+  const response = await apiClient.post("/auth/login", credentials);
+  return response.data;
 };
 
-export const postBook = async (newBook) => {
-  // Axios sends the object as JSON automatically
-  const response = await apiClient.post("/new_book", newBook);
+export const logout = async () => {
+  const response = await apiClient.post("/auth/logout");
   return response.data;
 };

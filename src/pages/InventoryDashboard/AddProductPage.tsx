@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { ImageUpload } from "../../components/ImageUpload.tsx";
+import { Link } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export const AddProductPage = () => {
   const [productName, setProductName] = useState("");
@@ -19,6 +21,7 @@ export const AddProductPage = () => {
     });
     alert("Product added (check console for data)");
   };
+  const navigate = useNavigate();
 
   return (
     <div style={styles.container}>
@@ -62,6 +65,9 @@ export const AddProductPage = () => {
         <button type="submit" style={styles.submitButton}>
           Add Product
         </button>
+        <Link component="button" type="button" onClick={() => navigate(-1)}>
+          Go back
+        </Link>
       </form>
     </div>
   );

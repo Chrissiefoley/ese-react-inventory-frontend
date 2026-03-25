@@ -4,7 +4,15 @@ import SideMenu from "../../components/SideMenu.tsx";
 import { useNavigate } from "react-router-dom";
 import { InventoryPage } from "../InventoryDashboard/InventoryPage.tsx";
 
-export const HomePage: React.FC = () => {
+interface HomePageProps {
+  isAuthenticated: boolean;
+  onLogout: () => void;
+}
+
+export const HomePage: React.FC<HomePageProps> = ({
+  isAuthenticated,
+  onLogout,
+}) => {
   const [selectedCategory, setSelectedCategory] = React.useState("All");
   const navigate = useNavigate();
 
@@ -12,7 +20,10 @@ export const HomePage: React.FC = () => {
     <>
       <Box sx={{ display: "flex", width: "100%" }}>
         <Box sx={{ flexShrink: 0 }}>
-          <SideMenu onSelect={(category) => setSelectedCategory(category)} />
+          <SideMenu
+            onSelect={(category) => setSelectedCategory(category)}
+            onLogout={onLogout}
+          />
         </Box>
         <Box
           sx={{
@@ -34,16 +45,14 @@ export const HomePage: React.FC = () => {
                 <span style={{ color: "#373db8ff" }}>SkySupperToSeat</span>
               </Typography>
             </Toolbar>
-            {/*isAuthenticated*/}
-            <Button
-              sx={{ color: "#b0b1bdff", alignContent: "flex-end" }}
-              onClick={() => navigate("/logout")}
-            >
-              Log out
-            </Button>
           </AppBar>
-          {/*isAuthenticated*/}
-          <InventoryPage />
+          {isAuthenticated ? (
+            <InventoryPage />
+          ) : (
+            <Typography sx={{ padding: "20px" }}>
+              You must login to view this page
+            </Typography>
+          )}
         </Box>
       </Box>
     </>

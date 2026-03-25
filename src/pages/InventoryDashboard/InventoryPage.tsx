@@ -16,31 +16,26 @@ interface InventoryItem {
 }
 
 export const InventoryPage: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [inventoryList, setInventoryList] = useState<InventoryItem[]>([]);
   const navigate = useNavigate();
 
+  const fetchInventory = async () => {
+    try {
+      const data = await inventory.getItems();
+      setInventoryList(data);
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const data = await inventory.getItems();
-        console.log("SUCCESS: Data in React state:", data);
-        setInventoryList(data);
-      } catch (error) {
-        console.error("Error fetching inventory:", error);
-      }
-    };
     fetchInventory();
   }, []);
 
   const handleUpdate = async (id: number, newStock: number) => {
     try {
       await inventory.updateItem(id, { count: newStock });
-      setInventoryList((prevList) =>
-        prevList.map((item) =>
-          item.id === id ? { ...item, count: newStock } : item,
-        ),
-      );
+      await fetchInventory();
     } catch (error) {
       console.error("Error updating inventory:", error);
     }
@@ -49,16 +44,11 @@ export const InventoryPage: React.FC = () => {
   const handleDelete = async (id: number) => {
     try {
       await inventory.deleteItem(id);
-      setInventoryList((prevList) => prevList.filter((item) => item.id !== id));
+      await fetchInventory();
     } catch (error) {
       console.error("Error deleting inventory:", error);
     }
   };
-
-  const filteredStock =
-    selectedCategory === "All"
-      ? inventoryList
-      : inventoryList.filter((item) => item.category === selectedCategory);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -66,7 +56,7 @@ export const InventoryPage: React.FC = () => {
         <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
           Inventory Dashboard
         </Typography>
-        <IconButton>
+        <IconButton onClick={() => navigate("/add-product")}>
           <AddBoxIcon onClick={() => navigate("/add-product")} />
           <Typography>Add new item</Typography>
         </IconButton>
