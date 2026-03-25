@@ -17,14 +17,9 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
     try {
       await onLogin({ username: email, password });
     } catch (error) {
@@ -61,15 +56,6 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            required
-            fullWidth
-            label="Confirm Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
             margin="normal"
           />
           <Button
