@@ -11,17 +11,9 @@ export const ImageUpload = ({ onUpload }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
-  if (!cloudName || !uploadPreset) {
-    return (
-      <div style={{ padding: "20px" }}>
-        <h3>Error</h3>
-        <p>Cloudinary credentials not configured. Check .env file.</p>
-      </div>
-    );
-  }
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
