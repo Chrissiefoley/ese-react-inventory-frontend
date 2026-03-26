@@ -4,10 +4,13 @@ import {
   Button,
   Typography,
   TextField,
+  Paper,
+  Alert,
+  Divider,
   Link,
 } from "@mui/material";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 interface LoginPageProps {
   onLogin: (credentials: { [key: string]: string }) => void;
@@ -15,23 +18,34 @@ interface LoginPageProps {
 
 export const LoginPage = ({ onLogin }: LoginPageProps) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("message") === "session_expired") {
+      setSessionExpired(true);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     try {
       await onLogin({ username: email, password });
+      const redirect = searchParams.get("redirect");
+      navigate(redirect ? `/${redirect}` : "/");
     } catch (error) {
       console.error("Login failed", error);
+      setError("Invalid email or password. Please try again.");
     }
   };
 
   return (
-    <Container>
+    <Container maxWidth="sm">
       <Box
-        component="form"
-        onSubmit={handleSubmit}
         sx={{
           marginTop: 8,
           display: "flex",
@@ -39,45 +53,93 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h4">Staff Login</Typography>
-        <Box sx={{ mt: 1 }}>
-          <TextField
-            required
-            fullWidth
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            required
-            fullWidth
-            label="Password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={handleSubmit}
+        <Paper
+          elevation={3}
+          sx={{
+            padding: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
+          <Typography variant="h4" gutterBottom>
+            Staff Login
+          </Typography>
+
+          {sessionExpired && (
+            <Alert severity="warning" sx={{ mb: 2, width: "100%" }}>
+              Your session has expired due to inactivity. Please log in again.
+            </Alert>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, width: "100%" }}>
+              {error}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 1, width: "100%" }}
           >
-            Login
-          </Button>
-          <Link
-            component="button"
-            type="button"
-            onClick={() => navigate("/reset_password")}
-          >
-            Forgotten Password?
-          </Link>
-          <Link component="button" type="button" onClick={() => navigate(-1)}>
-            Go back
-          </Link>
-        </Box>
+            <TextField
+              required
+              fullWidth
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              margin="normal"
+              autoFocus
+            />
+            <TextField
+              required
+              fullWidth
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              margin="normal"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2, py: 1.5 }}
+            >
+              Login
+            </Button>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Link
+                component="button"
+                type="button"
+                onClick={() => navigate("/password-reset")}
+                sx={{ fontSize: "0.9rem" }}
+              >
+                Forgot Password?
+              </Link>
+              <Link
+                component="button"
+                type="button"
+                onClick={() => navigate("/")}
+                sx={{ fontSize: "0.9rem" }}
+              >
+                Back to Home
+              </Link>
+            </Box>
+          </Box>
+        </Paper>
       </Box>
     </Container>
   );

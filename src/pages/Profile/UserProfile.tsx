@@ -28,6 +28,10 @@ export const UserProfile = () => {
         const data = await getCurrentUser();
         setUser(data);
       } catch (err) {
+        if (err.response?.status === 401) {
+          navigate("/login?redirect=profile&message=session_expired");
+          return;
+        }
         setError("Failed to load profile");
         console.error(err);
       } finally {
@@ -35,7 +39,7 @@ export const UserProfile = () => {
       }
     };
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   // Handle avatar upload
   const handleAvatarUpload = async (cloudinaryUrl) => {
