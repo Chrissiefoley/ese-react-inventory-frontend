@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Paper,
@@ -8,6 +8,10 @@ import {
   Box,
   Avatar,
   Alert,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ImageUpload } from "../../components/ImageUpload.tsx";
@@ -18,11 +22,26 @@ export const AddProductPage = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
+  const [categoryMode, setCategoryMode] = useState("select"); 
+  const [existingCategories, setExistingCategories] = useState<string[]>([]);
   const [count, setCount] = useState("");
   const [price, setPrice] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const items = await inventory.getItems();
+        const categories = [...new Set(items.map((item: any) => item.category))];
+        setExistingCategories(categories.sort());
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleImageUpload = (url: string) => {
     setImageUrl(url);
@@ -38,7 +57,7 @@ export const AddProductPage = () => {
         name,
         description,
         category,
-        count: parseInt(count),
+        count: count ? parseInt(count) : 0,
         price: parseFloat(price),
         image: imageUrl,
       });
@@ -46,7 +65,11 @@ export const AddProductPage = () => {
       navigate("/");
     } catch (error) {
       console.error("Error adding product:", error);
-      setError("Failed to add product. Please try again.");
+      if (error.response?.status === 400 && error.response?.data?.name) {
+        setError("Product already exists with this name.");
+      } else {
+        setError("Failed to add product. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -84,24 +107,63 @@ export const AddProductPage = () => {
             rows={3}
           />
 
-          <TextField
-            required
-            fullWidth
-            label="Category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            margin="normal"
-          />
+          {categoryMode === "select" ? (
+            <FormControl fullWidth margin="normal" required>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={category}
+                onChange={(e) => {
+                  if (e.target.value === "__add_new__") {
+                    setCategoryMode("custom");
+                    setCategory("");
+                  } else {
+                    setCategory(e.target.value);
+                  }
+                }}
+                label="Category"
+              >
+                {existingCategories.map((cat) => (
+                  <MenuItem key={cat} value={cat}>
+                    {cat}
+                  </MenuItem>
+                ))}
+                <MenuItem value="__add_new__" sx={{ fontStyle: "italic", color: "primary.main" }}>
+                  + Add new category
+                </MenuItem>
+              </Select>
+            </FormControl>
+          ) : (
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <TextField
+                required
+                fullWidth
+                label="New Category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                margin="normal"
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setCategoryMode("select");
+                  setCategory("");
+                }}
+                sx={{ mt: 1 }}
+              >
+                Cancel
+              </Button>
+            </Box>
+          )}
 
           <Box sx={{ display: "flex", gap: 2 }}>
             <TextField
-              required
               label="Count"
               type="number"
               value={count}
               onChange={(e) => setCount(e.target.value)}
               margin="normal"
               sx={{ flex: 1 }}
+              inputProps={{ min: 0 }}
             />
 
             <TextField
@@ -113,6 +175,7 @@ export const AddProductPage = () => {
               onChange={(e) => setPrice(e.target.value)}
               margin="normal"
               sx={{ flex: 1 }}
+              inputProps={{ min: 0 }}
             />
           </Box>
 
