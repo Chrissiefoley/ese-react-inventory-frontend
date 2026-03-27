@@ -47,7 +47,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </Toolbar>
           </AppBar>
           {isAuthenticated ? (
-            <InventoryPage />
+            <InventoryPage selectedCategory={selectedCategory} />
           ) : (
             <Typography sx={{ padding: "20px" }}>
               You must login to view this page

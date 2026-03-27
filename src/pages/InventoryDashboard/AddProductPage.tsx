@@ -1,124 +1,162 @@
 import { useState } from "react";
-import { ImageUpload } from "../../components/ImageUpload.tsx";
-import { Link } from "@mui/material";
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Avatar,
+  Alert,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { ImageUpload } from "../../components/ImageUpload.tsx";
+import { inventory } from "../../api/inventory.js";
 
 export const AddProductPage = () => {
-  const [productName, setProductName] = useState("");
-  const [productDescription, setProductDescription] = useState("");
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [count, setCount] = useState("");
+  const [price, setPrice] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleImageUpload = (url: string) => {
     setImageUrl(url);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log({
-      productName,
-      productDescription,
-      imageUrl,
-    });
-    alert("Product added (check console for data)");
+    setError("");
+    setLoading(true);
+
+    try {
+      await inventory.createItem({
+        name,
+        description,
+        category,
+        count: parseInt(count),
+        price: parseFloat(price),
+        image: imageUrl,
+      });
+      alert("Product added successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Error adding product:", error);
+      setError("Failed to add product. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
-  const navigate = useNavigate();
 
   return (
-    <div style={styles.container}>
-      <h2>Add New Product</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formGroup}>
-          <label htmlFor="productName">Product Name</label>
-          <input
-            id="productName"
-            type="text"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-            style={styles.input}
-            required
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label htmlFor="productDescription">Product Description</label>
-          <textarea
-            id="productDescription"
-            value={productDescription}
-            onChange={(e) => setProductDescription(e.target.value)}
-            style={styles.textarea}
-            required
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label>Product Image</label>
-          <ImageUpload onUpload={handleImageUpload} />
-          {imageUrl && (
-            <div style={styles.imagePreview}>
-              <p>Image uploaded:</p>
-              <img
-                src={imageUrl}
-                alt="Uploaded Product"
-                style={styles.previewImage}
-              />
-            </div>
-          )}
-        </div>
-        <button type="submit" style={styles.submitButton}>
-          Add Product
-        </button>
-        <Link component="button" type="button" onClick={() => navigate(-1)}>
-          Go back
-        </Link>
-      </form>
-    </div>
-  );
-};
+    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4">Add New Product</Typography>
 
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: "20px",
-    maxWidth: "700px",
-    margin: "0 auto",
-    fontFamily: "Arial, sans-serif",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-  input: {
-    padding: "10px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    fontSize: "16px",
-  },
-  textarea: {
-    padding: "10px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    fontSize: "16px",
-    minHeight: "100px",
-  },
-  imagePreview: {
-    marginTop: "10px",
-  },
-  previewImage: {
-    maxWidth: "200px",
-    marginTop: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-  },
-  submitButton: {
-    padding: "12px 20px",
-    borderRadius: "4px",
-    border: "none",
-    backgroundColor: "#007bff",
-    color: "white",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            required
+            fullWidth
+            label="Product Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            margin="normal"
+          />
+
+          <TextField
+            required
+            fullWidth
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            margin="normal"
+            multiline
+            rows={3}
+          />
+
+          <TextField
+            required
+            fullWidth
+            label="Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            margin="normal"
+          />
+
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              required
+              label="Count"
+              type="number"
+              value={count}
+              onChange={(e) => setCount(e.target.value)}
+              margin="normal"
+              sx={{ flex: 1 }}
+            />
+
+            <TextField
+              required
+              label="Price (£)"
+              type="number"
+              step="0.01"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              margin="normal"
+              sx={{ flex: 1 }}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1" gutterBottom>
+              Product Image (Optional)
+            </Typography>
+            <ImageUpload onUpload={handleImageUpload} />
+            {imageUrl && (
+              <Box sx={{ mt: 2, textAlign: "center" }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Image Preview:
+                </Typography>
+                <Avatar
+                  src={imageUrl}
+                  alt="Product preview"
+                  variant="rounded"
+                  sx={{ width: 150, height: 150, margin: "0 auto" }}
+                />
+              </Box>
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={loading}
+              sx={{ py: 1.5 }}
+            >
+              {loading ? "Adding..." : "Add Product"}
+            </Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => navigate("/")}
+              sx={{ py: 1.5 }}
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
+  );
 };
