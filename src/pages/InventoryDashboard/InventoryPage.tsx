@@ -20,6 +20,7 @@ import {
   DialogContent,
   DialogActions,
   Badge,
+  Alert,
 } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import EditIcon from "@mui/icons-material/Edit";
@@ -30,6 +31,7 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useNavigate } from "react-router-dom";
 import { inventory } from "../../api/inventory.js";
 import { ImageUpload } from "../../components/ImageUpload.tsx";
+import { getCurrentUser } from "../../api/users";
 
 interface InventoryItem {
   id: number;
@@ -53,6 +55,8 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
   const [editValues, setEditValues] = useState<{ count: number }>({ count: 0 });
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [userRole, setUserRole] = useState<string>("viewer");
+  const [isVerified, setIsVerified] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const fetchInventory = async () => {
@@ -64,8 +68,19 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
     }
   };
 
+  const fetchUserRole = async () => {
+    try {
+      const user = await getCurrentUser();
+      setUserRole(user.role);
+      setIsVerified(user.is_staff_verified);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+
   useEffect(() => {
     fetchInventory();
+    fetchUserRole();
   }, []);
 
   const filteredItems =
@@ -132,6 +147,8 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
   ];
 
   const renderCell = (columnId: string, item: InventoryItem) => {
+    const canEdit = userRole === "staff" || userRole === "admin";
+
     switch (columnId) {
       case "image":
         return (
@@ -139,19 +156,21 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
             overlap="circular"
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             badgeContent={
-              <IconButton
-                size="small"
-                sx={{
-                  backgroundColor: "primary.main",
-                  color: "white",
-                  width: 28,
-                  height: 28,
-                  "&:hover": { backgroundColor: "primary.dark" },
-                }}
-                onClick={() => handleImageClick(item.id)}
-              >
-                <CameraAltIcon sx={{ fontSize: 16 }} />
-              </IconButton>
+              canEdit ? (
+                <IconButton
+                  size="small"
+                  sx={{
+                    backgroundColor: "primary.main",
+                    color: "white",
+                    width: 28,
+                    height: 28,
+                    "&:hover": { backgroundColor: "primary.dark" },
+                  }}
+                  onClick={() => handleImageClick(item.id)}
+                >
+                  <CameraAltIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              ) : null
             }
           >
             <Avatar
@@ -198,7 +217,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         );
 
       case "stock":
-        return editingId === item.id ? (
+        return editingId === item.id && canEdit ? (
           <TextField
             type="number"
             size="small"
@@ -235,6 +254,10 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         );
 
       case "actions":
+        if (!canEdit) {
+          return null;
+        }
+
         return editingId === item.id ? (
           <Box sx={{ display: "flex", gap: 0.5, justifyContent: "center" }}>
             <IconButton
@@ -277,6 +300,12 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      {!isVerified && (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          Your account needs to be verified. Please contact your administrator for access.
+        </Alert>
+      )}
+
       <Box
         sx={{
           display: "flex",
@@ -290,15 +319,17 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         <Typography variant="h4" sx={{ fontWeight: 600 }}>
           Inventory Dashboard
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddBoxIcon />}
-          onClick={() => navigate("/add-product")}
-          fullWidth={false}
-          sx={{ minWidth: { xs: "100%", sm: "auto" } }}
-        >
-          Add New Item
-        </Button>
+        {(userRole === "staff" || userRole === "admin") && (
+          <Button
+            variant="contained"
+            startIcon={<AddBoxIcon />}
+            onClick={() => navigate("/add-product")}
+            fullWidth={false}
+            sx={{ minWidth: { xs: "100%", sm: "auto" } }}
+          >
+            Add New Item
+          </Button>
+        )}
       </Box>
 
       <TableContainer

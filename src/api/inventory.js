@@ -5,6 +5,10 @@ export const inventory = {
     const response = await apiClient.get("/items/");
     return response.data;
   },
+  createItem: async (item) => {
+    const response = await apiClient.post("/items/", item);
+    return response.data;
+  },
   updateItem: async (id, updates) => {
     const response = await apiClient.patch(`/items/${id}/`, updates);
     return response.data;
