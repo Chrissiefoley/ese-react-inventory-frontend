@@ -63,8 +63,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
     try {
       const data = await inventory.getItems();
       setInventoryList(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching inventory:", error);
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
     }
   };
 
@@ -73,8 +76,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
       const user = await getCurrentUser();
       setUserRole(user.role);
       setIsVerified(user.is_staff_verified);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching user:", error);
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
     }
   };
 
