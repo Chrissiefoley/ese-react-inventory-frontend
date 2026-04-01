@@ -21,7 +21,7 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         run: npm run lint || echo "ESLint not configured, skipping..."
@@ -38,7 +38,7 @@ jobs:
           node-version: "20"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run tests
         run: npm test -- --watchAll=false || echo "No tests found, skipping..."
@@ -58,7 +58,7 @@ jobs:
         run: npm install
 
       - name: Build production bundle
-        run: npm run build
+        run: npx react-scripts build
         env:
           CI: true
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL || 'http://localhost:8000' }}
