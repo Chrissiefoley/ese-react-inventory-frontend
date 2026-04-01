@@ -287,11 +287,12 @@ export const RegistrationPage = ({ onRegister }: RegistrationPageProps) => {
               type="submit"
               fullWidth
               variant="contained"
+              sx={{ mt: 3, mb: 2, py: 1.5 }}
             >
               Register
             </Button>
 
-            <Divider >
+            <Divider sx={{ my: 3 }}>
               <Typography variant="body2" color="text.secondary">
                 Already have an account?
               </Typography>
@@ -301,15 +302,17 @@ export const RegistrationPage = ({ onRegister }: RegistrationPageProps) => {
               fullWidth
               variant="outlined"
               onClick={() => navigate("/login")}
+              sx={{ py: 1.5 }}
             >
               Log In
             </Button>
 
-            <Box textAlign="center">
+            <Box sx={{ mt: 2, textAlign: "center" }}>
               <Link
                 component="button"
                 type="button"
                 onClick={() => navigate("/")}
+                sx={{ fontSize: "0.9rem" }}
               >
                 Back to Home
               </Link>
