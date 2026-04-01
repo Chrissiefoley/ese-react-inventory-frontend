@@ -148,7 +148,12 @@ export const AddProductPage = () => {
                   setCategoryMode("select");
                   setCategory("");
                 }}
-                sx={{ mt: 1 }}
+                sx={{
+                  mt: 1,
+                  backgroundColor: "#1a237e",
+                  color: "white",
+                  "&:hover": { backgroundColor: "#0d1642" }
+                }}
               >
                 Cancel
               </Button>
@@ -205,7 +210,11 @@ export const AddProductPage = () => {
               variant="contained"
               fullWidth
               disabled={loading}
-              sx={{ py: 1.5 }}
+              sx={{
+                py: 1.5,
+                backgroundColor: "#1a237e",
+                "&:hover": { backgroundColor: "#0d1642" }
+              }}
             >
               {loading ? "Adding..." : "Add Product"}
             </Button>
@@ -213,7 +222,12 @@ export const AddProductPage = () => {
               variant="outlined"
               fullWidth
               onClick={() => navigate("/")}
-              sx={{ py: 1.5 }}
+              sx={{
+                py: 1.5,
+                backgroundColor: "#1a237e",
+                color: "white",
+                "&:hover": { backgroundColor: "#0d1642" }
+              }}
             >
               Cancel
             </Button>

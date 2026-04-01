@@ -325,7 +325,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
             startIcon={<AddBoxIcon />}
             onClick={() => navigate("/add-product")}
             fullWidth={false}
-            sx={{ minWidth: { xs: "100%", sm: "auto" } }}
+            sx={{
+              minWidth: { xs: "100%", sm: "auto" },
+              backgroundColor: "#1a237e",
+              "&:hover": { backgroundColor: "#0d1642" }
+            }}
           >
             Add New Item
           </Button>
@@ -400,7 +404,16 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setImageDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={() => setImageDialogOpen(false)}
+            sx={{
+              backgroundColor: "#1a237e",
+              color: "white",
+              "&:hover": { backgroundColor: "#0d1642" }
+            }}
+          >
+            Cancel
+          </Button>
         </DialogActions>
       </Dialog>
     </Container>

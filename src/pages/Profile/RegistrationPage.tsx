@@ -287,7 +287,13 @@ export const RegistrationPage = ({ onRegister }: RegistrationPageProps) => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
+              sx={{
+                mt: 3,
+                mb: 2,
+                py: 1.5,
+                backgroundColor: "#1a237e",
+                "&:hover": { backgroundColor: "#0d1642" }
+              }}
             >
               Register
             </Button>
@@ -302,7 +308,12 @@ export const RegistrationPage = ({ onRegister }: RegistrationPageProps) => {
               fullWidth
               variant="outlined"
               onClick={() => navigate("/login")}
-              sx={{ py: 1.5 }}
+              sx={{
+                py: 1.5,
+                backgroundColor: "#1a237e",
+                color: "white",
+                "&:hover": { backgroundColor: "#0d1642" }
+              }}
             >
               Log In
             </Button>

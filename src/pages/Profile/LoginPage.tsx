@@ -123,7 +123,13 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
+              sx={{
+                mt: 3,
+                mb: 2,
+                py: 1.5,
+                backgroundColor: "#1a237e",
+                "&:hover": { backgroundColor: "#0d1642" }
+              }}
             >
               Login
             </Button>
@@ -157,6 +163,11 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
               fullWidth
               variant="outlined"
               onClick={() => navigate("/register")}
+              sx={{
+                backgroundColor: "#1a237e",
+                color: "white",
+                "&:hover": { backgroundColor: "#0d1642" }
+              }}
             >
               Create New Account
             </Button>
