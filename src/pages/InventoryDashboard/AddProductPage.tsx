@@ -14,8 +14,8 @@ import {
   InputLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { ImageUpload } from "../../components/ImageUpload.tsx";
-import { inventory } from "../../api/inventory.js";
+import { ImageUpload } from "../../components/ImageUpload";
+import { inventory } from "../../api/inventory";
 
 export const AddProductPage = () => {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export const AddProductPage = () => {
     const fetchCategories = async () => {
       try {
         const items = await inventory.getItems();
-        const categories = [...new Set(items.map((item: any) => item.category))];
+        const categories = Array.from(new Set(items.map((item: any) => item.category)));
         setExistingCategories(categories.sort());
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -58,12 +58,12 @@ export const AddProductPage = () => {
         description,
         category,
         count: count ? parseInt(count) : 0,
-        price: parseFloat(price),
+        price: price,
         image: imageUrl,
       });
       alert("Product added successfully!");
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding product:", error);
       if (error.response?.status === 400 && error.response?.data?.name) {
         setError("Product already exists with this name.");
@@ -175,12 +175,11 @@ export const AddProductPage = () => {
               required
               label="Price (£)"
               type="number"
-              step="0.01"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               margin="normal"
               sx={{ flex: 1 }}
-              inputProps={{ min: 0 }}
+              inputProps={{ min: 0, step: 0.01 }}
             />
           </Box>
 

@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ImageUpload } from "../../components/ImageUpload.tsx";
+import { ImageUpload } from "../../components/ImageUpload";
 import { getCurrentUser, updateUserProfile } from "../../api/users";
+import { User } from "../../types";
 
 export const UserProfile = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [editing, setEditing] = useState(false);
@@ -33,7 +34,7 @@ export const UserProfile = () => {
       try {
         const data = await getCurrentUser();
         setUser(data);
-      } catch (err) {
+      } catch (err: any) {
         if (err.response?.status === 401) {
           navigate("/login?redirect=profile&message=session_expired");
           return;
@@ -48,14 +49,14 @@ export const UserProfile = () => {
   }, [navigate]);
 
   // Handle avatar upload
-  const handleAvatarUpload = async (cloudinaryUrl) => {
+  const handleAvatarUpload = async (cloudinaryUrl: string) => {
     setUploading(true);
     setError("");
     try {
       const updatedUser = await updateUserProfile({ avatar: cloudinaryUrl });
       setUser(updatedUser);
       setEditing(false);
-    } catch (err) {
+    } catch (err: any) {
       setError("Failed to update avatar. Make sure the image is uploaded to Cloudinary.");
       console.error(err);
     } finally {
@@ -65,7 +66,7 @@ export const UserProfile = () => {
 
   // Handle contact info update
   const handleContactEdit = () => {
-    setContactValue(user.user_info.contact_info || "");
+    setContactValue(user?.user_info?.contact_info || "");
     setEditingContact(true);
   };
 
@@ -76,7 +77,7 @@ export const UserProfile = () => {
       const updatedUser = await updateUserProfile({ contact_info: contactValue });
       setUser(updatedUser);
       setEditingContact(false);
-    } catch (err) {
+    } catch (err: any) {
       setError("Failed to update contact information.");
       console.error(err);
     } finally {

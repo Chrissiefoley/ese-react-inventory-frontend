@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const CLOUDINARY_UPLOAD_URL = (cloudName) =>
+const CLOUDINARY_UPLOAD_URL = (cloudName: string) =>
   `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
 interface ImageUploadProps {
@@ -11,8 +11,8 @@ export const ImageUpload = ({ onUpload }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+  const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME!;
+  const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET!;
 
 
   const handleFileUpload = async (

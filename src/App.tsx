@@ -6,14 +6,15 @@ import {
   Route,
 } from "react-router-dom";
 import "./App.css";
-import { HomePage } from "./pages/HomePage/index.tsx";
-import { AddProductPage } from "./pages/InventoryDashboard/AddProductPage.tsx";
-import { LoginPage } from "./pages/Profile/LoginPage.tsx";
-import { LogoutPage } from "./pages/Profile/LogoutPage.tsx";
-import { UserProfile } from "./pages/Profile/UserProfile.tsx";
-import { RegistrationPage } from "./pages/Profile/RegistrationPage.tsx";
+import { HomePage } from "./pages/HomePage/index";
+import { AddProductPage } from "./pages/InventoryDashboard/AddProductPage";
+import { LoginPage } from "./pages/Profile/LoginPage";
+import { LogoutPage } from "./pages/Profile/LogoutPage";
+import { UserProfile } from "./pages/Profile/UserProfile";
+import { RegistrationPage } from "./pages/Profile/RegistrationPage";
 import { apiClient } from "./api/client";
 import * as authApi from "./api/auth";
+import { User, LoginCredentials, RegisterData } from "./types";
 
 function App() {
   return (
@@ -24,8 +25,8 @@ function App() {
 }
 
 function AppContent() {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   const isAuthenticated = !!user;
@@ -33,7 +34,7 @@ function AppContent() {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const response = await apiClient.get("/auth/me/");
+        const response = await apiClient.get<User>("/auth/me/");
         setUser(response.data);
       } catch (error) {
         setUser(null);
@@ -44,7 +45,7 @@ function AppContent() {
     checkUser();
   }, []);
 
-  const handleLogin = async (credentials) => {
+  const handleLogin = async (credentials: LoginCredentials): Promise<void> => {
     try {
       const response = await authApi.login(credentials);
       setUser(response.user);
@@ -55,7 +56,7 @@ function AppContent() {
     }
   };
 
-  const handleRegister = async (registrationData) => {
+  const handleRegister = async (registrationData: RegisterData): Promise<void> => {
     try {
       const response = await authApi.register(registrationData);
       setUser(response.user);
@@ -66,12 +67,12 @@ function AppContent() {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
       await authApi.logout();
       setUser(null);
       navigate("/login");
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         "Logout failed:",
         error.response ? error.response.data : error.message,

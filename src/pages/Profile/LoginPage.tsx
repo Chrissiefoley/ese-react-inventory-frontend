@@ -15,9 +15,10 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { LoginCredentials } from "../../types";
 
 interface LoginPageProps {
-  onLogin: (credentials: { [key: string]: string }) => void;
+  onLogin: (credentials: LoginCredentials) => Promise<void>;
 }
 
 export const LoginPage = ({ onLogin }: LoginPageProps) => {
@@ -141,6 +142,7 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                mb: 2
               }}
             >
               <Link
@@ -153,7 +155,7 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
               </Link>
             </Box>
 
-            <Divider>
+            <Divider sx={{ my: 2 }}>
               <Typography variant="body2" color="text.secondary">
                 New User?
               </Typography>
@@ -164,6 +166,7 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
               variant="outlined"
               onClick={() => navigate("/register")}
               sx={{
+                mt: 1,
                 backgroundColor: "#1a237e",
                 color: "white",
                 "&:hover": { backgroundColor: "#0d1642" }

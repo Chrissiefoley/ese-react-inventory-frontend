@@ -21,9 +21,10 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { RegisterData } from "../../types";
 
 interface RegistrationPageProps {
-  onRegister: (registrationData: { [key: string]: string }) => void;
+  onRegister: (registrationData: RegisterData) => Promise<void>;
 }
 
 export const RegistrationPage = ({ onRegister }: RegistrationPageProps) => {

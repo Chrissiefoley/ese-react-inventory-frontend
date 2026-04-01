@@ -29,8 +29,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import { useNavigate } from "react-router-dom";
-import { inventory } from "../../api/inventory.js";
-import { ImageUpload } from "../../components/ImageUpload.tsx";
+import { inventory } from "../../api/inventory";
+import { ImageUpload } from "../../components/ImageUpload";
 import { getCurrentUser } from "../../api/users";
 
 interface InventoryItem {

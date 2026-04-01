@@ -54,7 +54,7 @@ export const MenuCard: React.FC<MenuItemProps> = ({
 
   const handleConfirmDelete = async () => {
     await inventory.deleteItem(item.id);
-    onDelete(item.id);
+    onDelete();
     setAnchorEl(null);
   };
 
