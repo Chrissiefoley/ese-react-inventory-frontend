@@ -71,12 +71,12 @@ function AppContent() {
     try {
       await authApi.logout();
       setUser(null);
-      navigate("/login");
     } catch (error: any) {
       console.error(
         "Logout failed:",
         error.response ? error.response.data : error.message,
       );
+      setUser(null);
     }
   };
 
@@ -108,7 +108,7 @@ function AppContent() {
           )
         }
       />
-      <Route path="/logout" element={<LogoutPage />} />
+      <Route path="/logout" element={<LogoutPage onLogout={handleLogout} />} />
       <Route path="/add-product" element={<AddProductPage />} />
       <Route path="/profile" element={<UserProfile />} />
     </Routes>

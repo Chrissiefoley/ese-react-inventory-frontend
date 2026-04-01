@@ -306,12 +306,6 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      {!isVerified && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
-          Your account needs to be verified. Please contact your administrator for access.
-        </Alert>
-      )}
-
       <Box
         sx={{
           display: "flex",
