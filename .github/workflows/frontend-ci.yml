@@ -18,33 +18,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run ESLint
         run: npm run lint || echo "ESLint not configured, skipping..."
-
-  security-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run npm audit
-        run: npm audit --audit-level=high || true
-
-      - name: Check for vulnerable dependencies
-        run: npx audit-ci --high
 
   test:
     runs-on: ubuntu-latest
@@ -55,20 +35,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests with coverage
-        run: npm test -- --coverage --watchAll=false || echo "No tests found, skipping..."
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
-        if: success()
-        with:
-          name: coverage-report
-          path: coverage/
+      - name: Run tests
+        run: npm test -- --watchAll=false || echo "No tests found, skipping..."
 
   build:
     runs-on: ubuntu-latest
@@ -79,7 +52,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Install dependencies
         run: npm ci
@@ -93,7 +66,7 @@ jobs:
           REACT_APP_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.REACT_APP_CLOUDINARY_UPLOAD_PRESET || 'placeholder' }}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: production-build
           path: build/

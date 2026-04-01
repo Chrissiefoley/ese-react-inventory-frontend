@@ -12,7 +12,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
-  role: 'viewer' | 'staff' | 'admin';
+  role: 'staff' | 'admin';
   is_staff_verified: boolean;
   user_info: UserInfo;
 }
