@@ -26,7 +26,6 @@ function App() {
 
 function AppContent() {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   const isAuthenticated = !!user;
@@ -38,8 +37,6 @@ function AppContent() {
         setUser(response.data);
       } catch (error) {
         setUser(null);
-      } finally {
-        setIsLoading(false);
       }
     };
     checkUser();

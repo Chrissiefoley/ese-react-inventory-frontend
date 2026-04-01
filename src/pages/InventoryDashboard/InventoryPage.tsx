@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Container,
   Typography,
@@ -20,7 +20,6 @@ import {
   DialogContent,
   DialogActions,
   Badge,
-  Alert,
 } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import EditIcon from "@mui/icons-material/Edit";
@@ -55,11 +54,10 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
   const [editValues, setEditValues] = useState<{ count: number }>({ count: 0 });
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
-  const [userRole, setUserRole] = useState<string>("viewer");
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const fetchInventory = async () => {
+  const fetchInventory = useCallback(async () => {
     try {
       const data = await inventory.getItems();
       setInventoryList(data);
@@ -69,12 +67,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         navigate("/login");
       }
     }
-  };
+  }, [navigate]);
 
-  const fetchUserRole = async () => {
+  const fetchUserRole = useCallback(async () => {
     try {
       const user = await getCurrentUser();
-      setUserRole(user.role);
       setIsVerified(user.is_staff_verified);
     } catch (error: any) {
       console.error("Error fetching user:", error);
@@ -82,12 +79,12 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         navigate("/login");
       }
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     fetchInventory();
     fetchUserRole();
-  }, []);
+  }, [fetchInventory, fetchUserRole]);
 
   const filteredItems =
     selectedCategory === "All"
