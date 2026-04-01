@@ -133,18 +133,10 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 alignItems: "center",
               }}
             >
-              <Link
-                component="button"
-                type="button"
-                onClick={() => navigate("/password-reset")}
-                sx={{ fontSize: "0.9rem" }}
-              >
-                Forgot Password?
-              </Link>
               <Link
                 component="button"
                 type="button"

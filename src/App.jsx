@@ -14,7 +14,6 @@ import { UserProfile } from "./pages/Profile/UserProfile.tsx";
 import { RegistrationPage } from "./pages/Profile/RegistrationPage.tsx";
 import { apiClient } from "./api/client";
 import * as authApi from "./api/auth";
-import { PasswordResetPage } from "./pages/Profile/ResetPasswordPage.tsx";
 
 function App() {
   return (
@@ -111,7 +110,6 @@ function AppContent() {
       <Route path="/logout" element={<LogoutPage />} />
       <Route path="/add-product" element={<AddProductPage />} />
       <Route path="/profile" element={<UserProfile />} />
-      <Route path="/password-reset" element={<PasswordResetPage />} />
     </Routes>
   );
 }

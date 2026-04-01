@@ -147,7 +147,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
   ];
 
   const renderCell = (columnId: string, item: InventoryItem) => {
-    const canEdit = userRole === "staff" || userRole === "admin";
+    const canEdit = isVerified;
 
     switch (columnId) {
       case "image":
@@ -319,7 +319,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
         <Typography variant="h4" sx={{ fontWeight: 600 }}>
           Inventory Dashboard
         </Typography>
-        {(userRole === "staff" || userRole === "admin") && (
+        {isVerified && (
           <Button
             variant="contained"
             startIcon={<AddBoxIcon />}
