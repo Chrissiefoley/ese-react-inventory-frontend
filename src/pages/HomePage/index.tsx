@@ -27,51 +27,49 @@ export const HomePage: React.FC<HomePageProps> = ({
         <Box
           sx={{
             flexGrow: 1,
+            width: 0,
             display: "flex",
             flexDirection: "column",
-            minHeight: "100vh",
-            backgroundColor: "#f5f5f5",
+            bgcolor: "#f5f5f5",
           }}
         >
-          <AppBar
-            position="static"
-            sx={{
-              backgroundColor: "#1a237e",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          >
+          <AppBar position="static" elevation={1}>
             <Toolbar>
               <Typography
                 variant="h6"
                 component="div"
-                sx={{ flexGrow: 1, fontWeight: 600 }}
+                sx={{ fontWeight: "bold" }}
               >
-                ESE Inventory Management
+                Welcome to{" "}
+                <span style={{ color: "#373db8ff" }}>SkySupperToSeat</span>
               </Typography>
-              {isAuthenticated ? (
-                <>
-                  <Button
-                    color="inherit"
-                    onClick={() => navigate("/profile")}
-                    sx={{ mr: 2 }}
-                  >
-                    Profile
-                  </Button>
-                  <Button color="inherit" onClick={onLogout}>
-                    Logout
-                  </Button>
-                </>
-              ) : (
-                <Button color="inherit" onClick={() => navigate("/login")}>
-                  Login
-                </Button>
-              )}
             </Toolbar>
           </AppBar>
-
-          <Box sx={{ flexGrow: 1, overflow: "auto" }}>
+          {isAuthenticated ? (
             <InventoryPage selectedCategory={selectedCategory} />
-          </Box>
+          ) : (
+            <Box sx={{ padding: "40px", textAlign: "center" }}>
+              <Typography variant="h5" sx={{ mb: 3 }}>
+                You must login to view this page
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate("/login")}
+                  sx={{ px: 4 }}
+                >
+                  Log In
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate("/register")}
+                  sx={{ px: 4 }}
+                >
+                  Register
+                </Button>
+              </Box>
+            </Box>
+          )}
         </Box>
       </Box>
     </>

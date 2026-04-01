@@ -1,6 +1,6 @@
 # ESE Inventory Frontend
 
-> Modern React inventory management interface with role-based UI and enterprise authentication
+> TypeScript-based React inventory management interface with JWT authentication and role-based access control
 
 ## 📋 Table of Contents
 
@@ -11,8 +11,9 @@
 - [Project Structure](#project-structure)
 - [API Integration](#api-integration)
 - [Testing](#testing)
-- [Deployment](#deployment)
 - [Security](#security)
+- [Technical Decisions](#technical-decisions)
+- [AI Statement](#ai-statement)
 
 ---
 
@@ -22,113 +23,106 @@
 
 ```
 Frontend (React + TypeScript)
-     ↓ REST API calls
-Backend (Django + DRF)
-     ↓ Database queries
-Database (SQLite/Postgres)
+     ↓ REST API calls (Axios + JWT cookies)
+Backend (Django REST Framework)
+     ↓ ORM queries
+Database (SQLite - development)
 ```
 
 **Component Hierarchy:**
 ```
-App.tsx (Router + Auth Context)
-├── HomePage (Landing page with auth buttons)
-├── InventoryDashboard
-│   ├── SideMenu (Role-based navigation)
-│   ├── InventoryPage (Main table + CRUD)
-│   │   ├── AddItemDialog (Staff/Admin only)
-│   │   ├── EditItemDialog (Staff/Admin only)
-│   │   └── ImageUpload (Cloudinary integration)
-│   └── Profile
-│       ├── UserProfile (Avatar + info display)
-│       └── ImageUpload (Avatar upload)
-└── Login/Register (Authentication forms)
+App.tsx (Router + Auth State Management)
+├── HomePage (Main layout with SideMenu + Inventory)
+│   ├── SideMenu (Category navigation)
+│   └── InventoryPage (Table view with CRUD operations)
+├── AddProductPage (Product creation form)
+├── Profile Pages
+│   ├── LoginPage (JWT authentication)
+│   ├── RegistrationPage (Staff verification)
+│   └── UserProfile (Avatar + contact info editing)
+└── Shared Components
+    └── ImageUpload (Cloudinary integration)
 ```
 
 ### Design Patterns
-- **Data-driven table rendering** - Column configuration approach
-- **API service layer** - Axios clients with interceptors
-- **Role-based UI** - Dynamic component rendering based on user.role
+- **Centralized type definitions** - Single source of truth (`types/index.ts`) for all interfaces
+- **API service layer** - Separate modules for auth, inventory, users for better organisation
+- **Co-located tests** - Test files alongside implementation files for easier maintenance
+- **Role-based rendering** - Conditional UI based on `is_staff_verified` flag for security
 
 ---
 
 ## Tech Stack
 
-- **React 18.3.1** + **TypeScript**
-- **Material-UI 6.x** - Enterprise UI components
+- **React 18.3.1** with **TypeScript 4.x**
+- **Material-UI 6.x** - Enterprise component library
 - **Axios** - HTTP client with credential support
 - **React Router v6** - Client-side routing
+- **Jest + React Testing Library** - Unit and integration testing
 - **Cloudinary** - Image hosting and upload
-
-
-**TypeScript Benefits:** Caught 100+ potential bugs during development through type checking, made refactoring safer
 
 ---
 
 ## ✨ Key Features
 
-### Role-Based UI
+### Authentication & Authorization
+- JWT cookie-based authentication 
+- Staff table verification during registration
+- Role-based UI rendering (verified vs unverified users)
+- Session expiration handling
 
-| Feature | Viewer | Staff | Admin |
-|---------|:------:|:-----:|:-----:|
-| View inventory | ✅ | ✅ | ✅ |
-| Add products | ❌ | ✅ | ✅ |
-| Edit/Delete | ❌ | ✅ | ✅ |
+### Inventory Management
+- **CRUD operations** - Create, read, update, delete items
+- **Category filtering** - Sidebar navigation with preset categories for quick access
+- **Image uploads** - Cloudinary integration for product images
+- **Low stock warnings** - Visual alerts when count < 10
+- **Category dropdown** - Shows existing categories + "Add new" option for custom categories
 
-### Inventory Features
-- Category filtering
-- Inline stock editing
-- Image upload with Cloudinary
-- Smart category dropdown
-- Low stock warnings (< 10)
-- Responsive table design
+### User Profile
+- Avatar upload and management
+- Contact information editing
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 ```bash
-node --version  # 18+ required
+node --version  # v18.20.4 or higher
+npm --version   # v10.8.3 or higher
 ```
 
 ### Installation
 ```bash
+# Install dependencies
 npm install
+
+# Verify installation
+npm run build
 ```
 
 ### Environment Setup
 
-Create `.env` file:
+Create `.env` in project root:
 ```env
-REACT_APP_API_URL=http://localhost:8000
 REACT_APP_CLOUDINARY_CLOUD_NAME=your-cloud-name
 REACT_APP_CLOUDINARY_UPLOAD_PRESET=your-preset-name
 ```
 
-### Cloudinary Setup
-
-1. Create account at [cloudinary.com](https://cloudinary.com)
-2. Get your **Cloud Name** from dashboard
-3. Create upload preset:
-   - Settings → Upload → Add upload preset
-   - Signing Mode: **Unsigned**
-   - Folder: `ese-inventory-avatars`
-   - Format: `jpg`, `png`, `webp`
-   - Max file size: **5MB**
-   - Transformations: Auto-crop to square, quality auto
-4. Add to `.env`:
-   ```env
-   REACT_APP_CLOUDINARY_CLOUD_NAME=your-cloud-name
-   REACT_APP_CLOUDINARY_UPLOAD_PRESET=your-preset-name
-   ```
-
-**Security Note:** Unsigned presets are safe because Cloudinary validates uploads server-side
+**Backend Connection:**
+The app expects the Django backend at `http://localhost:8000/api` (configured in `src/api/client.ts`)
 
 ### Run Development Server
 ```bash
 npm start
 ```
-Opens at http://localhost:3000
+Opens at **http://localhost:3000**
+
+**First-time Setup:**
+1. Ensure Django backend is running on port 8000
+2. Register a new user (requires matching Staff table record)
+3. Admin must verify account via Django admin panel
+4. Login and access inventory dashboard
 
 ---
 
@@ -136,164 +130,133 @@ Opens at http://localhost:3000
 
 ```
 src/
-├── api/
-│   ├── client.js        # Axios config
-│   ├── auth.js          # Auth endpoints
-│   ├── inventory.js     # Inventory CRUD
-│   └── users.js         # User profile
-├── components/
-│   ├── ImageUpload.tsx
-│   └── SideMenu.tsx
-├── pages/
-│   ├── HomePage/
-│   ├── InventoryDashboard/
-│   └── Profile/
-└── App.tsx
+├── api/                      # API service layer
+│   ├── client.ts            # Axios configuration
+│   ├── auth.ts              # Login, register, logout
+│   ├── inventory.ts         # Item CRUD operations
+│   └── users.ts             # Profile management
+├── components/              # Reusable components
+│   ├── ImageUpload.tsx      # Cloudinary upload widget
+│   ├── InventoryCard.tsx    # Card view (legacy)
+│   └── SideMenu.tsx         # Category navigation
+├── pages/                   # Route-level pages
+│   ├── HomePage/            # Main dashboard layout
+│   ├── InventoryDashboard/  # Inventory table + add product
+│   └── Profile/             # Auth + user profile pages
+├── types/                   # TypeScript definitions
+│   └── index.ts             # Centralized interfaces
+├── utils/                   # Helper functions
+│   ├── inventory.ts         # Inventory utilities
+│   ├── inventory.test.ts    # Unit tests
+│   ├── validation.ts        # Password validation
+│   └── validation.test.ts   # Unit tests
+├── App.tsx                  # Root component with routing
+├── index.tsx                # Entry point
+└── setupTests.ts            # Jest configuration
 ```
-
-**Organization Strategy:**
-
-- **`/api`** - Isolated API layer (auth, inventory, users services)
-- **`/components`** - Reusable components (ImageUpload, SideMenu)
-- **`/pages`** - Route-level components with business logic
-- **Flat structure** - Avoided deep nesting for easier imports
-- **Co-location** - Page-specific components live in page folders
-
-**Why this works:** Clear separation between data layer (`/api`), presentation (`/components`), and business logic (`/pages`)
-
 ---
 
-## 🔌 API Integration
+## API Integration
 
-### Axios Configuration
+### Axios Client Configuration
 ```typescript
-const apiClient = axios.create({
-  baseURL: process.env.REACT_APP_API_URL + '/api',
-  withCredentials: true,  // Critical for JWT cookies
+// src/api/client.ts
+export const apiClient = axios.create({
+  baseURL: "http://localhost:8000/api",
+  withCredentials: true,  // Required for JWT cookie transmission
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 ```
 
-### Error Handling & Interceptors
+### API Endpoints
 
-**Response Interceptor:**
-```typescript
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Redirect to login on authentication failure
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-```
+**Authentication:**
+- `POST /auth/register/` - Create new user (requires Staff verification)
+- `POST /auth/login/` - Login with username/password
+- `POST /auth/logout/` - Invalidate JWT tokens
+- `GET /auth/me/` - Get current user details
 
-**Error Handling Pattern:**
-```typescript
-try {
-  const data = await updateUserProfile({ avatar: url });
-  setUser(data);
-} catch (error) {
-  console.error("Profile update failed:", error);
-  setError(error.response?.data?.message || "Update failed");
-}
-```
+**Inventory:**
+- `GET /items/` - List all inventory items
+- `POST /items/` - Create new item
+- `PATCH /items/:id/` - Update item (partial)
+- `DELETE /items/:id/` - Remove item
 
-**Key Decision:** Global 401 interceptor ensures consistent auth behavior across all API calls
+**User Profile:**
+- `GET /auth/me/` - Fetch user + UserInfo
+- `PATCH /auth/me/` - Update avatar or contact_info
+
 
 ---
 
-## 🧪 Testing
+## Testing
 
-**Current Status:** Implemented (0 automated tests)
+### Test Coverage
 
-**Manual Testing Performed:**
-- Login/logout flows with JWT cookies ✓
-- Role-based UI rendering (viewer vs staff) ✓
-- Inventory CRUD operations ✓
-- Avatar upload via Cloudinary ✓
-- Category filtering ✓
-- Low stock warnings ✓
+**24 Tests Passing**
 
-**Future Test Strategy:**
+**Unit Tests:**
+- `utils/validation.test.ts` - Password strength validation 
+- `utils/inventory.test.ts` - Stock level checks, price formatting 
+
+**Integration Tests:**
+- `LoginPage.test.tsx` - Form rendering, validation
+- `RegistrationPage.test.tsx` - Multi-step registration flow
+- `InventoryPage.test.tsx` - Table rendering, role-based UI
+
+### Run Tests
 ```bash
-# Component tests with React Testing Library
+# Run all tests
 npm test
 
-# Test files to create:
-# - Login.test.tsx - Authentication flows
-# - InventoryPage.test.tsx - Table rendering, role checks
-# - ImageUpload.test.tsx - File upload mocking
-```
+# Run with coverage
+npm test -- --coverage
 
-**Recommended Testing Libraries:**
-- React Testing Library (user-centric testing)
-- Jest (test runner + assertions)
-- MSW (Mock Service Worker for API mocking)
+# Run specific test file
+npm test -- LoginPage.test.ts
+```
 
 ---
 
-## 🚢 Deployment
+## Security
 
-### Build
-```bash
-npm run build
-```
+### JWT Cookie Authentication
 
-### Environment Variables in Production
-Configure in hosting platform:
-- `REACT_APP_API_URL`
-- `REACT_APP_CLOUDINARY_CLOUD_NAME`
-- `REACT_APP_CLOUDINARY_UPLOAD_PRESET`
-
----
-
-## 🔒 Security
-
-### Authentication Approach
-
-**Client-Side Security:**
-- JWT tokens stored in **httponly cookies** (managed by backend)
-- No tokens in localStorage/sessionStorage (prevents XSS theft)
-- Cookies sent automatically with `withCredentials: true`
-- 401 responses trigger automatic redirect to login
-
-**Role-Based UI:**
+**Client-Side Implementation:**
 ```typescript
-const canEdit = userRole === "staff" || userRole === "admin";
-
-// Hide UI elements based on role
-{canEdit && (
-  <Button onClick={handleAddItem}>Add Product</Button>
-)}
+// Cookies are set by backend, automatically sent by browser
+const apiClient = axios.create({
+  withCredentials: true,  // Critical setting
+});
 ```
 
-**Important:** UI role checks are for UX only — backend enforces actual permissions
-
-### Security Decisions
-
-1. **HttpOnly Cookies:**
-   - **Threat:** XSS attacks stealing JWT from localStorage
-   - **Mitigation:** Cookies inaccessible to JavaScript, only sent in HTTP requests
-
-2. **Role Checks:**
-   - **Frontend:** Hides buttons/forms for better UX
-   - **Backend:** Actually enforces permissions (frontend checks can be bypassed)
-   - **Result:** Layered security - convenience + enforcement
-
-3. **CORS Credentials:**
-   - `withCredentials: true` required for cookie transmission
-   - Backend validates origin via `CORS_ALLOWED_ORIGINS`
-   - Prevents CSRF attacks from untrusted domains
-
-4. **Input Sanitization:**
-   - React automatically escapes HTML in JSX (prevents XSS)
-   - Backend validates all inputs with DRF serializers
-
+**Security Properties:**
+- **httponly flag** - Prevents XSS theft
+- **secure flag** - Only transmitted over HTTPS in production
+- **samesite=Lax** - Prevents CSRF attacks from external sites
+- **max_age** - Tokens expire after 2 hours (access) / 7 days (refresh)
 
 ---
 
-Please note: 
-This README was created with assistance from Claude Code (Anthropic) to review the project structure and implementation details.
 
+### UI Design Choice 
+
+The project uses Material-UI component library for consistent and accessible UI components, with some custom css for specific styling needs.
+
+---
+
+## AI Statement
+
+### Use of Generative AI Tools
+
+This project was developed with assistance from **Claude Code (Anthropic)/ Windsurf** as a learning and development aid. AI tools were used throughout the development process, primarily for learning and understanding complex concepts and styling improvements, and helping with debugging and migration from JavaScript to TypeScript. Finally, documentation was enhanced using AI assistance.
+It should be noted that all code was reviewed, clarified and understood before being committed.
+
+Through video submission, details of code, architecture and concept implementation is proven. 
+
+---
+
+**Project Repository:** (https://github.com/Chrissiefoley/ese-react-inventory-frontend.git)
+**Backend Repository:** [ese-django-inventory-backend](https://github.com/Chrissiefoley/ese-django-inventory-backend.git)
