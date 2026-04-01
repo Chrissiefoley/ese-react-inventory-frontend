@@ -1,9 +1,17 @@
 import { Container, Box, Button, Typography, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import LogoutIcon from "@mui/icons-material/Logout";
+import { useEffect } from "react";
 
-export const LogoutPage = () => {
+interface LogoutPageProps {
+  onLogout: () => void;
+}
+
+export const LogoutPage: React.FC<LogoutPageProps> = ({ onLogout }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    onLogout();
+  }, [onLogout]);
 
   return (
     <Container maxWidth="sm">
@@ -33,7 +41,8 @@ export const LogoutPage = () => {
             variant="body1"
             color="text.secondary"
             sx={{ mb: 3, textAlign: "center" }}
-          >Your session has ended securely. Please log back in to access Inventory.
+          >
+            Your session has ended securely. Please log back in to access Inventory.
           </Typography>
 
           <Box sx={{ display: "flex", gap: 2, width: "100%" }}>

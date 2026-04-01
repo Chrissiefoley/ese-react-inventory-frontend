@@ -63,8 +63,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
     try {
       const data = await inventory.getItems();
       setInventoryList(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching inventory:", error);
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
     }
   };
 
@@ -73,8 +76,11 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
       const user = await getCurrentUser();
       setUserRole(user.role);
       setIsVerified(user.is_staff_verified);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching user:", error);
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
     }
   };
 
@@ -300,12 +306,6 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      {!isVerified && (
-        <Alert severity="warning" sx={{ mb: 3 }}>
-          Your account needs to be verified. Please contact your administrator for access.
-        </Alert>
-      )}
-
       <Box
         sx={{
           display: "flex",
