@@ -11,6 +11,7 @@ import { AddProductPage } from "./pages/InventoryDashboard/AddProductPage.tsx";
 import { LoginPage } from "./pages/Profile/LoginPage.tsx";
 import { LogoutPage } from "./pages/Profile/LogoutPage.tsx";
 import { UserProfile } from "./pages/Profile/UserProfile.tsx";
+import { RegistrationPage } from "./pages/Profile/RegistrationPage.tsx";
 import { apiClient } from "./api/client";
 import * as authApi from "./api/auth";
 import { PasswordResetPage } from "./pages/Profile/ResetPasswordPage.tsx";
@@ -55,6 +56,17 @@ function AppContent() {
     }
   };
 
+  const handleRegister = async (registrationData) => {
+    try {
+      const response = await authApi.register(registrationData);
+      setUser(response.user);
+      navigate("/");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      throw error;
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await authApi.logout();
@@ -76,7 +88,26 @@ function AppContent() {
           <HomePage isAuthenticated={isAuthenticated} onLogout={handleLogout} />
         }
       />
-      <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+      <Route
+        path="/login"
+        element={
+          isAuthenticated ? (
+            <HomePage isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+          ) : (
+            <LoginPage onLogin={handleLogin} />
+          )
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          isAuthenticated ? (
+            <HomePage isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+          ) : (
+            <RegistrationPage onRegister={handleRegister} />
+          )
+        }
+      />
       <Route path="/logout" element={<LogoutPage />} />
       <Route path="/add-product" element={<AddProductPage />} />
       <Route path="/profile" element={<UserProfile />} />

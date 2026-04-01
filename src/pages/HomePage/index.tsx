@@ -49,12 +49,27 @@ export const HomePage: React.FC<HomePageProps> = ({
           {isAuthenticated ? (
             <InventoryPage selectedCategory={selectedCategory} />
           ) : (
-            <>
-              <Typography sx={{ padding: "20px" }}>
+            <Box sx={{ padding: "40px", textAlign: "center" }}>
+              <Typography variant="h5" sx={{ mb: 3 }}>
                 You must login to view this page
               </Typography>
-              <Button onClick={() => navigate("/login")}>Log in</Button>
-            </>
+              <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate("/login")}
+                  sx={{ px: 4 }}
+                >
+                  Log In
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate("/register")}
+                  sx={{ px: 4 }}
+                >
+                  Register
+                </Button>
+              </Box>
+            </Box>
           )}
         </Box>
       </Box>

@@ -8,9 +8,13 @@ import {
   Alert,
   Divider,
   Link,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 interface LoginPageProps {
   onLogin: (credentials: { [key: string]: string }) => void;
@@ -19,10 +23,11 @@ interface LoginPageProps {
 export const LoginPage = ({ onLogin }: LoginPageProps) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [email, setEmail] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("message") === "session_expired") {
@@ -34,12 +39,12 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
     e.preventDefault();
     setError("");
     try {
-      await onLogin({ username: email, password });
+      await onLogin({ username: employeeId, password });
       const redirect = searchParams.get("redirect");
       navigate(redirect ? `/${redirect}` : "/");
     } catch (error) {
       console.error("Login failed", error);
-      setError("Invalid email or password. Please try again.");
+      setError("Invalid employee ID or password. Please try again.");
     }
   };
 
@@ -87,10 +92,9 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
             <TextField
               required
               fullWidth
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              label="Employee ID"
+              value={employeeId}
+              onChange={(e) => setEmployeeId(e.target.value)}
               margin="normal"
               autoFocus
             />
@@ -98,10 +102,22 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
               required
               fullWidth
               label="Password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               margin="normal"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               type="submit"
@@ -138,6 +154,20 @@ export const LoginPage = ({ onLogin }: LoginPageProps) => {
                 Back to Home
               </Link>
             </Box>
+
+            <Divider>
+              <Typography variant="body2" color="text.secondary">
+                New User?
+              </Typography>
+            </Divider>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={() => navigate("/register")}
+            >
+              Create New Account
+            </Button>
           </Box>
         </Paper>
       </Box>
